@@ -1,9 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const CalculatorPanel = ({ theme }) => {
+const CalculatorPanel = ({ theme, num, setNum, setRes }) => {
    const colors = {
       one: "",
       sec: ""
@@ -14,159 +13,88 @@ const CalculatorPanel = ({ theme }) => {
       case "white": colors.one = "black"; colors.sec = "#f9f9f9"; break;
       case "black": colors.one = "#2a2c38"; colors.sec = "#e6e6e6"; break;
    }
+   const [openCount, setOpenCount] = useState(0);
+   const [closeCount, setCloseCount] = useState(0);
+   const buttonPressed = (text) => {
+      if (text === "AC" || text === "Reload") {
+         setNum("");
+         setRes(0);
+         setOpenCount(0);
+         setCloseCount(0);
+         console.log("All Clear");
+      }
+      else if (text === "=") {
+         let brack = '';
+         let count = 0;
+         if ((num[num.length - 1] === "+" || num[num.length - 1] === "-" || num[num.length - 1] === "/" || num[num.length - 1] === "*" || num[num.length - 1] === "%")) {
+            console.log(num[num.length - 1])
+         }
+         else {
+            if (openCount !== closeCount) {
+               count = openCount - closeCount;
+               console.log(count);
+               for (let i = 0; i < count; i++) {
+                  brack += ")"
+                  setCloseCount(closeCount + 1);
+               }
+               console.log(brack);
+               setNum(num + brack);
+               setRes(parseFloat(eval(num + brack)).toFixed(5));
+               console.log(num + brack, "=", parseFloat(eval(num + brack)).toFixed(5));
+            }
+            else {
+               setRes(parseFloat(eval(num)).toFixed(5));
+               console.log(num, "=", parseFloat(eval(num)).toFixed(5));
+            }
+         }
+      }
+      else if (num === "" && (text === "+" || text === "-" || text === "/" || text === "X" || text === "%")) {
+         setNum("0" + text);
+         console.log("0" + text);
+      }
+      else if (text === "X") {
+         setNum(num + "*");
+         console.log(num + "*");
+      }
+      else if (text === "(") {
+         setNum(num + text);
+         setOpenCount(openCount + 1);
+      }
+      else if (text === ")") {
+         setNum(num + text);
+         setCloseCount(closeCount + 1);
+      }
+      else {
+         setNum(num + text);
+      }
+   }
+
+   const values = [["AC", "(", ")", "/"], ["7", "8", "9", "X"], ["4", "5", "6", "-"], ["1", "2", "3", "+"], [".", "0", "%", "="]]
+
+   const rows = values.map((val) => {
+      return <View style={{ ...styles.commonStyle }} key={val[0]}>
+         {
+            val.map((e) => {
+               let color = theme === "white" ? "black" : "white"
+               if (e === "AC" || e === "(" || e === ")")
+                  color = "#00a784"
+               else if (e === "+" || e === "-" || e === "/" || e === "X" || e === "=")
+                  color = "#ed2c2c"
+               return (
+                  <TouchableOpacity onPress={() => { buttonPressed(e) }} key={e}>
+                     <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
+                        <Text style={{ ...styles.textStyle, color: color }}>{e}</Text>
+                     </View>
+                  </TouchableOpacity>
+               )
+            })
+         }
+      </View>
+   })
 
    return (
       <View style={{ ...styles.containerStyle, backgroundColor: theme === "white" ? colors.sec : colors.one }}>
-         <View style={{ ...styles.commonStyle }}>
-            <TouchableOpacity onPress={() => {
-               console.log("All clear");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: "#00a784" }}>AC</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("+/-");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <MaterialCommunityIcons name="plus-minus-variant" size={24} color="#00a784" style={{ ...styles.textStyle }} />
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("%");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: "#00a784" }}>%</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("/");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: "#ed2c2c" }}>/</Text>
-               </View>
-            </TouchableOpacity>
-         </View>
-         <View style={{ ...styles.commonStyle }}>
-            <TouchableOpacity onPress={() => {
-               console.log("7");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>7</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("8");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>8</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("9");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>9</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("X");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: "#ed2c2c" }}>X</Text>
-               </View>
-            </TouchableOpacity>
-         </View>
-         <View style={{ ...styles.commonStyle }}>
-            <TouchableOpacity onPress={() => {
-               console.log("4");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>4</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("5");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>5</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("6");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>6</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("-");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: "#ed2c2c" }}>-</Text>
-               </View>
-            </TouchableOpacity>
-         </View>
-         <View style={{ ...styles.commonStyle }}>
-            <TouchableOpacity onPress={() => {
-               console.log("1");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>1</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("2");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>2</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("3");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>3</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("+");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: "#ed2c2c" }}>+</Text>
-               </View>
-            </TouchableOpacity>
-         </View>
-         <View style={{ ...styles.commonStyle }}>
-            <TouchableOpacity onPress={() => {
-               console.log("reload");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <MaterialCommunityIcons name="reload" size={24} color="black" style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }} />
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("0");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>0</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log(".");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: theme === "white" ? "black" : "white" }}>.</Text>
-               </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => {
-               console.log("=");
-            }}>
-               <View style={{ ...styles.buttonStyle, backgroundColor: theme === "white" ? "#e5e5e5" : "#22252e" }}>
-                  <Text style={{ ...styles.textStyle, color: "#ed2c2c" }}>=</Text>
-               </View>
-            </TouchableOpacity>
-         </View>
+         {rows}
       </View>
    )
 }

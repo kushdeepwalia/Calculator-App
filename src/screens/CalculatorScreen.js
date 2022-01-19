@@ -8,20 +8,20 @@ import Toggler from '../components/Toggler/Toggler'
 const CalculatorScreen = () => {
    const [color, setColor] = useState("black");
    const [result, setResult] = useState(0);
+   const [numbers, setNumbers] = useState("");
 
    const backColor = color === "white" ? "#f9f9f9" : "#2a2c38";
    const screenColor = color === "white" ? "#ffffff" : "#22252e";
    const fontColor = color === "white" ? "black" : "white";
 
-   const numbers = {
-      num1: 0,
-      num2: 0,
-      operate: ""
-   }
 
    function calculation(ch) {
       switch (ch) {
-         default: setResult(0); break;
+         case "+":
+         case "-":
+         case "*":
+         case "/":
+         default: setResult(0); setNumbers(""); break;
       }
    }
 
@@ -33,10 +33,10 @@ const CalculatorScreen = () => {
             </View>
             <View style={styles.panelregionStyle}>
                <View style={styles.regionStyle}>
-                  <Calculationregion color={fontColor} numbers result />
+                  <Calculationregion color={fontColor} num={numbers} res={result} />
                </View>
                <View style={styles.panelStyle}>
-                  <CalculatorPanel theme={color} numbers setResult />
+                  <CalculatorPanel theme={color} num={numbers} setNum={setNumbers} setRes={setResult} />
                </View>
             </View>
          </SafeAreaView>

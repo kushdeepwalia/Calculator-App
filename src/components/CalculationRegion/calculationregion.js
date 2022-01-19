@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
-const Calculationregion = ({ color, result, numbers }) => {
+const Calculationregion = ({ color, res, num }) => {
 
    return (
       <View style={styles.containerStyle}>
-         <Text style={{ ...styles.firstValues, color: color }}>{numbers.num1.toString() + " " + numbers.operate.toString() + " " + numbers.num2.toString()}</Text>
-         {result !== null ? <Text style={{ ...styles.secondValues, color: color }}>{result}</Text> : null}
+         <Text style={{ ...styles.firstValues, color: color }}>{num}</Text>
+         {res !== null ? <Text style={{ ...styles.secondValues, color: color }}>{res}</Text> : null}
       </View>
    )
 }
